@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Gibberish</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="/bower_components/code-prettify/loader/prettify.css" type="text/css" rel="stylesheet">
+<script src="/bower_components/code-prettify/loader/prettify.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<style>
+body {
+    position: relative;
+    padding-top: 100px;
+
+    font-family: 'RobotoDraft', 'Roboto', sans-serif;
+    font-size: 14px;
+    color: #666666;
+}
+div {
+    max-width: 512px;
+    margin: 0 auto;
+}
+h2 {
+    text-align: center;
+}
+pre {
+    height: 256px;
+    overflow-y: scroll;
+}
+</style>
+</head>
+<body>
+<div id="container">
+    <h2>Blobber Gibber</h2>
+    <pre class="prettyprint lang-json"><code></code></pre>
+    <button id="gibber" type="button">MORE GIBBERISH!</button>
+    <button id="stop" type="button">STOP!!</button>
+<div>
+</body>
+<script>
+var next = "0",
+    bait = 0,
+    ref = null;
+function update(data) {
+    var show = data === undefined ? "" : JSON.stringify(data, null, 4);
+    $("code").text(show).parent().removeClass("prettyprinted");
+    prettyPrint();
+}
+function Gibberish() {
+    $.getJSON("/gibberish?next=" + next).done(function(data) {
+        update(data);
+        next = data.next;
+    });
+}
+$("#gibber").click(function() {
+    if (ref === null) {
+        Gibberish();
+        bait = 0;
+        ref = setInterval(Gibberish, 3 * 1000);
+    } else {
+        bait += 1;
+        if (bait === 5) {
+            alert("Why are you so fond of clicking me?");
+        } else if (bait === 25) {
+            alert("Do you have nothing else to do?");
+        } else if (bait === 50) {
+            alert("You should see someone about this...");
+        } else if (bait === 100) {
+            alert("Okay, you need to stop");
+            window.location = "/";
+        }
+    }
+});
+$("#stop").click(function() {
+    ref && clearInterval(ref);
+    ref = null;
+    update();
+});
+</script>
+</html>
